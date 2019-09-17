@@ -1,0 +1,22 @@
+kind: pipeline
+type: docker
+name: default
+steps:
+- name: wisereads-api
+  image: java:openjdk-8-alpine
+  commands:
+    - ./gradlew clean build
+# to push docker image into ecrrepo
+- name: publish
+  image: plugins/ecr
+  settings:
+    access_key:
+      from_secret: aws_access_key_id
+    secret_key:
+      from_secret: aws_secret_access_key
+    region: us-east-1
+    tags: [ latest, 1.0, 1 ]
+    repo: 633025986259.dkr.ecr.us-east-1.amazonaws.com/wisereads-api
+    registry: 633025986259.dkr.ecr.us-east-1.amazonaws.com
+  when:
+    event: push
